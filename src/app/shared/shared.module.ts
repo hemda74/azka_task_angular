@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PaginationComponent } from './components/pagination/pagination.component';
 import { ModalComponent } from './components/modal/modal.component';
-import { CeilPipe } from './components/ceilPipe/ceil.pipe';
 @NgModule({
-  declarations: [PaginationComponent, ModalComponent, CeilPipe],
+  declarations: [ModalComponent],
   imports: [CommonModule],
-  exports: [PaginationComponent, ModalComponent, CeilPipe],
+  exports: [ModalComponent],
 })
 export class SharedModule {}
