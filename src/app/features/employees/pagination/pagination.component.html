@@ -1,0 +1,19 @@
+<div class="pagination">
+  <button
+    [disabled]="currentPage === 1"
+    (click)="onPageChange(currentPage - 1)"
+  >
+    Previous
+  </button>
+
+  <span
+    >Page {{ currentPage }} of {{ Math.ceil(totalItems / itemsPerPage) }}</span
+  >
+
+  <button
+    [disabled]="currentPage >= Math.ceil(totalItems / itemsPerPage)"
+    (click)="onPageChange(currentPage + 1)"
+  >
+    Next
+  </button>
+</div>

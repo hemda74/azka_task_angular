@@ -1,0 +1,186 @@
+<div class="container-fluid" style="padding: 20px" dir="rtl">
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+    <button mat-icon-button class="close-error" (click)="errorMessage = ''">
+      ×
+    </button>
+  </div>
+
+  <div class="employee-form-section" style="width: 50%">
+    <h2>{{ isEditing ? "تعديل بيانات الموظف" : "إضافة بيانات موظف جديد" }}</h2>
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group">
+          <label>رقم الموظف:</label>
+          <div class="input-container">
+            <input matInput formControlName="id" placeholder="" readonly />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>الاسم:</label>
+          <div class="input-container">
+            <input matInput formControlName="name" placeholder="أدخل الاسم" />
+            <div
+              class="error"
+              *ngIf="employeeForm.get('name')?.errors?.['required'] && employeeForm.get('name')?.touched"
+            >
+              الاسم مطلوب
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>تاريخ الميلاد:</label>
+          <div class="input-container">
+            <input
+              matInput
+              [matDatepicker]="picker"
+              formControlName="dateOfBirth"
+              placeholder=""
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <div
+              class="error"
+              *ngIf="employeeForm.get('dateOfBirth')?.errors?.['required'] && employeeForm.get('dateOfBirth')?.touched"
+            >
+              تاريخ الميلاد مطلوب
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>المؤهل:</label>
+          <div class="input-container">
+            <mat-select
+              style="font-size: 0.8rem"
+              formControlName="qualification"
+              placeholder="اختر المؤهل"
+            >
+              <mat-option value="High School">ثانوية عامة</mat-option>
+              <mat-option value="Bachelor">بكالوريوس</mat-option>
+              <mat-option value="Master">ماجستير</mat-option>
+              <mat-option value="PhD">دكتوراه</mat-option>
+            </mat-select>
+            <div
+              class="error"
+              *ngIf="employeeForm.get('qualification')?.errors?.['required'] && employeeForm.get('qualification')?.touched"
+            >
+              المؤهل مطلوب
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!employeeForm.valid"
+          class="save-btn"
+        >
+          {{ isEditing ? "حفظ" : "اضافة" }}
+        </button>
+
+        <button
+          *ngIf="isEditing"
+          mat-raised-button
+          type="button"
+          (click)="cancelEdit()"
+          class="cancel-btn"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="employee-list-section">
+    <h2>قائمة الموظفين</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>الرقم</th>
+          <th>الاسم</th>
+          <th>تاريخ الميلاد</th>
+          <th>المؤهل</th>
+          <th>عدد أيام الإجازات</th>
+          <th>الإجازات</th>
+          <th>الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let employee of employees">
+          <td>{{ employee.id }}</td>
+          <td>{{ employee.name }}</td>
+          <td>{{ employee.dateOfBirth | date }}</td>
+          <td>{{ getQualificationInArabic(employee.qualification) }}</td>
+          <td>{{ employee.totalLeaveDays }}</td>
+          <td>
+            <button
+              mat-raised-button
+              color="primary"
+              class="view-leave"
+              (click)="viewEmployeeLeaves(employee.id)"
+            >
+              عرض
+            </button>
+          </td>
+          <td>
+            <button
+              mat-raised-button
+              color="accent"
+              class="edit-btn"
+              (click)="editEmployee(employee)"
+            >
+              تعديل
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="delete-btn"
+              (click)="deleteEmployee(employee.id)"
+            >
+              حذف
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button
+        mat-button
+        [disabled]="currentPage === 1"
+        (click)="onPageChange(currentPage - 1)"
+      >
+        &lt;
+      </button>
+      <div class="page-info">
+        <span>{{ currentPage }}</span>
+        <span class="total-pages">من {{ getTotalPages() }}</span>
+      </div>
+      <button
+        mat-button
+        [disabled]="currentPage >= getTotalPages()"
+        (click)="onPageChange(currentPage + 1)"
+      >
+        &gt;
+      </button>
+    </div>
+  </div>
+
+  <app-employee-leaves
+    style="width: 100%; margin: 0 auto"
+    *ngIf="showLeaves && selectedEmployeeId"
+    [employeeId]="selectedEmployeeId"
+    [isVisible]="showLeaves"
+  ></app-employee-leaves>
+</div>
